@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe · Profesional</title>
+    <!-- Google Font untuk tampilan premium -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f1f5f9;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --x-color: #dc2626;
+            --o-color: #2563eb;
+            --accent: #6366f1;
+            --win-glow: #fbbf24;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            --radius-sm: 12px;
+            --radius: 16px;
+            --radius-lg: 20px;
+            --transition: 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.03) 0%, transparent 40%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: var(--text);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 36px 32px 32px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+            max-width: 440px;
+            width: 100%;
+            border: 1px solid var(--border);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,0.02) inset;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            width: 100%;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .title .x-symbol {
+            color: var(--x-color);
+            font-weight: 800;
+        }
+        .title .o-symbol {
+            color: var(--o-color);
+            font-weight: 800;
+        }
+        .title span.separator {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        /* Scoreboard */
+        .scoreboard {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .score-card {
+            flex: 1;
+            background: #f8fafc;
+            border-radius: var(--radius-sm);
+            padding: 14px 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.25s ease;
+            min-width: 80px;
+            max-width: 130px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .score-card.x-card {
+            border-top: 3px solid var(--x-color);
+        }
+        .score-card.o-card {
+            border-top: 3px solid var(--o-color);
+        }
+        .score-card.draw-card {
+            border-top: 3px solid #94a3b8;
+        }
+
+        .score-card .player-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .score-card .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+
+        /* Turn Indicator */
+        .turn-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #f8fafc;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: -0.2px;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            color: var(--text);
+            background: #fff;
+            box-shadow: var(--shadow-sm);
+            min-width: 170px;
+        }
+
+        .turn-indicator.x-turn {
+            border-color: #fecaca;
+            background: #fff5f5;
+            color: var(--x-color);
+        }
+
+        .turn-indicator.o-turn {
+            border-color: #bfdbfe;
+            background: #eff6ff;
+            color: var(--o-color);
+        }
+
+        .turn-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #94a3b8;
+            transition: all 0.3s ease;
+        }
+
+        .x-turn .turn-dot {
+            background: var(--x-color);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+        }
+        .o-turn .turn-dot {
+            background: var(--o-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        /* Board */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 320px;
+            aspect-ratio: 1;
+            background: #ffffff;
+            padding: 6px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+        }
+
+        .cell {
+            background: #ffffff;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2rem;
+            font-weight: 700;
+            transition: background 0.15s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            border: 1px solid #e2e8f0;
+            user-select: none;
+            position: relative;
+            aspect-ratio: 1;
+            color: transparent;
+        }
+
+        .cell:not(.taken):hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .cell:not(.taken):active {
+            transform: scale(0.96);
+            background: #f1f5f9;
+            transition: transform 0.08s ease;
+        }
+
+        .cell.taken {
+            cursor: default;
+            pointer-events: none;
+            background: #ffffff;
+            border-color: #e2e8f0;
+        }
+
+        .cell.x-cell {
+            color: var(--x-color);
+        }
+        .cell.o-cell {
+            color: var(--o-color);
+        }
+
+        .cell.win-cell {
+            border-color: #fbbf24 !important;
+            background: #fffbeb !important;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2), 0 4px 12px rgba(251, 191, 36, 0.15) !important;
+            animation: subtlePulse 1.5s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes subtlePulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2), 0 4px 12px rgba(251, 191, 36, 0.15);
+            }
+            50% {
+                box-shadow: 0 0 0 5px rgba(251, 191, 36, 0.35), 0 6px 16px rgba(251, 191, 36, 0.25);
+            }
+        }
+
+        .cell.entering {
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: -0.2px;
+            transition: all 0.25s ease;
+            background: #ffffff;
+            color: var(--text);
+            border: 1px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            box-shadow: var(--shadow);
+            transform: translateY(-1px);
+        }
+        .btn:active {
+            transform: scale(0.97);
+            background: #f1f5f9;
+            transition: transform 0.1s ease;
+        }
+
+        .btn-reset {
+            background: #0f172a;
+            color: #ffffff;
+            border-color: #0f172a;
+            font-weight: 600;
+        }
+        .btn-reset:hover {
+            background: #1e293b;
+            border-color: #1e293b;
+            color: white;
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.15);
+        }
+
+        /* Result banner */
+        .result-banner {
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 40px;
+            letter-spacing: -0.2px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.35s ease;
+            text-align: center;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text);
+        }
+
+        .result-banner.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .result-banner.win-x {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #b91c1c;
+        }
+        .result-banner.win-o {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1e40af;
+        }
+        .result-banner.draw {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            color: #475569;
+        }
+
+        /* Footer hint */
+        .hint {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: -8px;
+            opacity: 0.7;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px 18px 24px;
+                border-radius: var(--radius);
+                gap: 22px;
+            }
+            .title {
+                font-size: 1.6rem;
+            }
+            .board {
+                max-width: 270px;
+                gap: 7px;
+                padding: 4px;
+            }
+            .cell {
+                font-size: 2.5rem;
+                border-radius: 10px;
+            }
+            .scoreboard {
+                gap: 8px;
+            }
+            .score-card {
+                padding: 10px 6px;
+                border-radius: 10px;
+            }
+            .score-card .score-value {
+                font-size: 1.6rem;
+            }
+            .score-card .player-label {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">
+                <span class="x-symbol">X</span>
+                <span class="separator">·</span>
+                <span>Tic Tac Toe</span>
+                <span class="separator">·</span>
+                <span class="o-symbol">O</span>
+            </h1>
+            <p class="subtitle">Permainan klasik dua pemain</p>
+        </div>
+
+        <!-- Scoreboard -->
+        <div class="scoreboard">
+            <div class="score-card x-card">
+                <div class="player-label">Pemain X</div>
+                <div class="score-value" id="scoreX">0</div>
+            </div>
+            <div class="score-card draw-card">
+                <div class="player-label">Seri</div>
+                <div class="score-value" id="scoreDraw">0</div>
+            </div>
+            <div class="score-card o-card">
+                <div class="player-label">Pemain O</div>
+                <div class="score-value" id="scoreO">0</div>
+            </div>
+        </div>
+
+        <!-- Turn Indicator -->
+        <div class="turn-indicator x-turn" id="turnIndicator">
+            <span class="turn-dot"></span>
+            <span id="turnText">Giliran: Pemain X</span>
+        </div>
+
+        <!-- Game Board -->
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <!-- Result Banner -->
+        <div class="result-banner" id="resultBanner"></div>
+
+        <!-- Reset Button -->
+        <button class="btn btn-reset" id="btnReset" title="Mulai ulang permainan (dobel klik untuk reset skor)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Main Lagi
+        </button>
+        <p class="hint">Dobel klik tombol untuk reset skor · Tekan <strong>R</strong> untuk reset cepat</p>
+    </div>
+
+    <script>
+        (function() {
+            // --- DOM Elements ---
+            const boardEl = document.getElementById('board');
+            const cellEls = boardEl.querySelectorAll('.cell');
+            const turnIndicator = document.getElementById('turnIndicator');
+            const turnText = document.getElementById('turnText');
+            const resultBanner = document.getElementById('resultBanner');
+            const btnReset = document.getElementById('btnReset');
+            const scoreXEl = document.getElementById('scoreX');
+            const scoreOEl = document.getElementById('scoreO');
+            const scoreDrawEl = document.getElementById('scoreDraw');
+
+            // --- State ---
+            let board = Array(9).fill(null);
+            let currentPlayer = 'X';
+            let gameActive = true;
+            let winCombo = null;
+
+            // Scores
+            let scoreX = 0;
+            let scoreO = 0;
+            let scoreDraw = 0;
+
+            const winCombinations = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8], // rows
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8], // columns
+                [0, 4, 8],
+                [2, 4, 6] // diagonals
+            ];
+
+            function updateTurnIndicator() {
+                turnIndicator.classList.remove('x-turn', 'o-turn');
+                if (currentPlayer === 'X') {
+                    turnIndicator.classList.add('x-turn');
+                    turnText.textContent = 'Giliran: Pemain X';
+                } else {
+                    turnIndicator.classList.add('o-turn');
+                    turnText.textContent = 'Giliran: Pemain O';
+                }
+            }
+
+            function showResult(message, type) {
+                resultBanner.textContent = message;
+                resultBanner.className = 'result-banner show ' + type;
+            }
+
+            function hideResult() {
+                resultBanner.className = 'result-banner';
+                resultBanner.textContent = '';
+            }
+
+            function updateScoreDisplay() {
+                scoreXEl.textContent = scoreX;
+                scoreOEl.textContent = scoreO;
+                scoreDrawEl.textContent = scoreDraw;
+            }
+
+            function checkWin(boardState) {
+                for (const combo of winCombinations) {
+                    const [a, b, c] = combo;
+                    if (
+                        boardState[a] &&
+                        boardState[a] === boardState[b] &&
+                        boardState[a] === boardState[c]
+                    ) {
+                        return { winner: boardState[a], combo };
+                    }
+                }
+                return null;
+            }
+
+            function isBoardFull(boardState) {
+                return boardState.every(cell => cell !== null);
+            }
+
+            function highlightWinCells(combo) {
+                combo.forEach(index => {
+                    cellEls[index].classList.add('win-cell');
+                });
+            }
+
+            function clearHighlights() {
+                cellEls.forEach(cell => cell.classList.remove('win-cell'));
+            }
+
+            function handleGameEnd(winner) {
+                gameActive = false;
+                const winResult = checkWin(board);
+
+                if (winResult) {
+                    winCombo = winResult.combo;
+                    highlightWinCells(winResult.combo);
+                    if (winner === 'X') {
+                        scoreX++;
+                        showResult('🎉 Pemain X Menang!', 'win-x');
+                    } else {
+                        scoreO++;
+                        showResult('🎉 Pemain O Menang!', 'win-o');
+                    }
+                } else if (isBoardFull(board)) {
+                    winCombo = null;
+                    scoreDraw++;
+                    showResult('🤝 Permainan Seri', 'draw');
+                }
+                updateScoreDisplay();
+
+                cellEls.forEach(cell => {
+                    if (!cell.classList.contains('taken')) {
+                        cell.classList.add('taken');
+                    }
+                });
+            }
+
+            function handleCellClick(e) {
+                const cell = e.currentTarget;
+                const index = parseInt(cell.getAttribute('data-index'));
+
+                if (!gameActive || board[index] !== null) return;
+
+                board[index] = currentPlayer;
+                cell.textContent = currentPlayer;
+                cell.classList.add('taken', currentPlayer === 'X' ? 'x-cell' : 'o-cell');
+                cell.classList.add('entering');
+
+                cell.addEventListener('animationend', () => {
+                    cell.classList.remove('entering');
+                }, { once: true });
+
+                const winResult = checkWin(board);
+                if (winResult) {
+                    handleGameEnd(winResult.winner);
+                } else if (isBoardFull(board)) {
+                    handleGameEnd(null);
+                } else {
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                    updateTurnIndicator();
+                    hideResult();
+                }
+            }
+
+            function resetGame() {
+                board = Array(9).fill(null);
+                currentPlayer = 'X';
+                gameActive = true;
+                winCombo = null;
+
+                cellEls.forEach(cell => {
+                    cell.textContent = '';
+                    cell.className = 'cell';
+                });
+                clearHighlights();
+                hideResult();
+                updateTurnIndicator();
+
+                boardEl.style.transition = 'transform 0.25s ease';
+                boardEl.style.transform = 'scale(0.97)';
+                setTimeout(() => {
+                    boardEl.style.transform = 'scale(1)';
+                }, 100);
+            }
+
+            function resetAllScores() {
+                scoreX = 0;
+                scoreO = 0;
+                scoreDraw = 0;
+                updateScoreDisplay();
+                resetGame();
+            }
+
+            // Event Listeners
+            cellEls.forEach(cell => {
+                cell.addEventListener('click', handleCellClick);
+            });
+
+            btnReset.addEventListener('click', resetGame);
+
+            btnReset.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+                resetAllScores();
+                btnReset.textContent = '✅ Skor Direset';
+                setTimeout(() => {
+                    btnReset.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Main Lagi`;
+                }, 1200);
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'r' || e.key === 'R') {
+                    if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+                    e.preventDefault();
+                    resetGame();
+                }
+            });
+
+            // Init
+            updateTurnIndicator();
+            updateScoreDisplay();
+            boardEl.style.transition = 'transform 0.25s ease';
+        })();
+    </script>
+</body>
+</html>
